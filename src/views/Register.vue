@@ -18,14 +18,20 @@
 
       <v-row>
         <v-col cols="2">
-          <v-text-field label="CEP" @blur="getCEP" v-model="cep">
+          <v-text-field
+            label="CEP"
+            @blur="getCEP"
+            v-model="cep"
+            type="number"
+            hide-spin-buttons
+          >
           </v-text-field>
         </v-col>
         <v-col cols="5">
-          <v-text-field label="Cidade"> </v-text-field>
+          <v-text-field label="Cidade" v-model="cidade"> </v-text-field>
         </v-col>
         <v-col cols="5">
-          <v-text-field label="Estado"> </v-text-field>
+          <v-text-field label="Estado" v-model="estado"> </v-text-field>
         </v-col>
       </v-row>
 
@@ -59,6 +65,8 @@
 export default {
   data: () => ({
     cep: "",
+    cidade: "",
+    estado: "",
     valid: true,
     name: "",
     nameRules: [
@@ -74,6 +82,7 @@ export default {
     items: ["Item 1", "Item 2", "Item 3", "Item 4"],
     checkbox: false,
   }),
+
   methods: {
     validate() {
       this.$refs.form.validate();
@@ -84,8 +93,21 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
-    getCEP() {
-      console.log(this.cep);
+    async getCEP() {
+      if (this.cep.length === 8) {
+        try {
+          const response = await fetch(
+            `https://viacep.com.br/ws/${this.cep}/json/`
+          );
+          const json = await response.json();
+          this.cidade = json.localidade;
+          this.estado = json.uf;
+        } catch (error) {
+          console.log("CEP Inválido", error);
+        }
+      } else {
+        console.log("CEP Inválido");
+      }
     },
   },
 };
