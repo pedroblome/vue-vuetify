@@ -22,8 +22,8 @@
             label="CEP"
             @blur="getCEP"
             v-model="cep"
-            type="number"
             hide-spin-buttons
+            v-mask="['#####-###']"
           >
           </v-text-field>
         </v-col>
@@ -82,7 +82,6 @@ export default {
     items: ["Item 1", "Item 2", "Item 3", "Item 4"],
     checkbox: false,
   }),
-
   methods: {
     validate() {
       this.$refs.form.validate();
@@ -94,10 +93,11 @@ export default {
       this.$refs.form.resetValidation();
     },
     async getCEP() {
-      if (this.cep.length === 8) {
+      const cepFormatado = this.cep.replace("-", "");
+      if (cepFormatado.length === 8) {
         try {
           const response = await fetch(
-            `https://viacep.com.br/ws/${this.cep}/json/`
+            `https://viacep.com.br/ws/${cepFormatado}/json/`
           );
           const json = await response.json();
           this.cidade = json.localidade;
